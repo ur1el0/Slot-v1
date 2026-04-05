@@ -1,0 +1,47 @@
+{% extends 'slot/base.html' %}
+{% block title %}Manage Services | Appointment Booking{% endblock %}
+{% block content %}
+<h2>{% if editing_service %}Edit Service{% else %}Add Service{% endif %}</h2>
+<form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <p>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+            {{ field }}<br>
+            {{ field.errors }}
+        </p>
+    {% endfor %}
+    <button type="submit">Save</button>
+</form>
+
+<h3>All Services</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in services %}
+            <tr>
+                <td>{{ service.name }}</td>
+                <td>{{ service.is_active }}</td>
+                <td>
+                    <a href="{% url 'manage_services' %}?service_id={{ service.id }}">Edit</a>
+                    <form method="post" style="display:inline; margin-left:8px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_service_id" value="{{ service.id }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">No services found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

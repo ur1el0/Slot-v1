@@ -1,0 +1,17 @@
+{% extends 'slot/base.html' %}
+{% block title %}Book Appointment | Appointment Booking{% endblock %}
+{% block content %}
+<h2>Book Appointment</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        <p>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+            {{ field }}<br>
+            {{ field.errors }}
+        </p>
+    {% endfor %}
+    <button type="submit">Submit Booking</button>
+</form>
+{% endblock %}
