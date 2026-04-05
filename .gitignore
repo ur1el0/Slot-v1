@@ -4,4 +4,4 @@ __pycache__/
 migrations
 
 
-slot/templates/notes/*.html
+slot/tempate/slot/*.html
