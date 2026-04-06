@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
+:root {
+  --bg: #f7f9fb;
+  --panel: #ffffff;
+  --text: #191c1e;
+  --muted: #424754;
+  --faint: #727785;
+  --line: #e0e3e5;
+  --line-light: #eceef0;
+  --primary: #0058be;
+  --primary-dark: #004395;
+  --primary-light: #d8e2ff;
+  --primary-bg: #eef4ff;
+  --secondary: #006c49;
+  --secondary-light: #6cf8bb;
+  --secondary-bg: #e6fff3;
+  --tertiary: #924700;
+  --tertiary-bg: #ffdcc6;
+  --danger: #ba1a1a;
+  --danger-bg: #ffdad6;
+  --success: #006c49;
+  --success-bg: #d4fce8;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.04);
+  --shadow-lg: 0 20px 40px rgba(25,28,30,.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; letter-spacing: -.02em; line-height: 1.2; }
+h1 { font-size: 2.25rem; font-weight: 800; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+h3 { font-size: 1.15rem; font-weight: 700; }
+p { color: var(--muted); }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { width: min(1140px, 92%); margin: 0 auto; }
+.main-content { padding: 32px 0 56px; flex: 1; }
+
