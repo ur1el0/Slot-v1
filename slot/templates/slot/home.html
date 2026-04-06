@@ -1,0 +1,21 @@
+{% extends 'slot/base.html' %} {% block title %}Home | Slot{% endblock %} 
+{% block content %}
+<h2>Welcome</h2>
+<p>
+  Browse services, select an available schedule, and submit your slot request.
+</p>
+<p><a href="{% url 'services' %}">View Services</a></p>
+
+<h3>Available Services</h3>
+{% if services %}
+<ul>
+  {% for service in services %}
+  <li>
+    <strong>{{ service.name }}</strong><br />
+    {{ service.description|default:'No description provided.' }}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No services are available yet.</p>
+{% endif %} {% endblock %}

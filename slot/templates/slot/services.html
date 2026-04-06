@@ -1,0 +1,45 @@
+{% extends 'slot/base.html' %} {% block title %}Services | Slot{% endblock %} 
+{% block content %}
+<h2>Services</h2>
+
+{% for service in services %}
+<section>
+  <h3>{{ service.name }}</h3>
+  <p>{{ service.description|default:'No description provided.' }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Capacity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for schedule in service.schedules.all %} {% if schedule.bookable %}
+      <tr>
+        <td>{{ schedule.date }}</td>
+        <td>{{ schedule.start_time }} - {{ schedule.end_time }}</td>
+        <td>{{ schedule.remaining_slots }} / {{ schedule.slot_limit }}</td>
+        <td>
+          {% if user.is_authenticated %}
+          <a href="{% url 'book_appointment' %}?schedule={{ schedule.id }}"
+            >Book Slot</a
+          >
+          {% else %}
+          <a href="{% url 'login' %}">Login to book slot</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %} {% empty %}
+      <tr>
+        <td colspan="4">No schedules available.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% empty %}
+<p>No services are available yet.</p>
+{% endfor %} {% endblock %}

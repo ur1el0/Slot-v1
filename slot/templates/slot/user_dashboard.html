@@ -1,0 +1,9 @@
+{% extends 'slot/base.html' %} {% block title %}Dashboard | Slot{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<p>Welcome, {{ user.get_full_name|default:user.username }}.</p>
+<ul>
+  <li><a href="{% url 'services' %}">View Services</a></li>
+  <li><a href="{% url 'my_appointments' %}">My Slots</a></li>
+</ul>
+{% endblock %}
