@@ -1,14 +1,18 @@
-{% extends 'slot/base.html' %} {% block title %}Book Slot | Slot{% endblock %}
+{% extends 'slot/base.html' %}
+{% block title %}Book Appointment | Slot{% endblock %}
 {% block content %}
-<h2>Book Slot</h2>
-<form method="post">
-  {% csrf_token %} {{ form.non_field_errors }} {% for field in form %}
-  <p>
-    <label for="{{ field.id_for_label }}">{{ field.label }}</label><br />
-    {{ field }}<br />
-    {{ field.errors }}
-  </p>
-  {% endfor %}
-  <button type="submit">Submit Slot Request</button>
-</form>
+<div class="auth-page">
+  <div class="auth-card" style="max-width:560px">
+    <h1>Book Appointment</h1>
+    <p class="subtitle">Select a service and time slot.</p>
+    <form method="post" class="card-form wide" style="max-width:100%">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="form-group"><label for="{{ form.service.id_for_label }}">Service</label>{{ form.service }}{{ form.service.errors }}</div>
+      <div class="form-group"><label for="{{ form.schedule.id_for_label }}">Schedule</label>{{ form.schedule }}{{ form.schedule.errors }}</div>
+      <div class="form-group"><label for="{{ form.reason.id_for_label }}">Reason</label>{{ form.reason }}{{ form.reason.errors }}</div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Confirm Appointment →</button>
+    </form>
+  </div>
+</div>
 {% endblock %}

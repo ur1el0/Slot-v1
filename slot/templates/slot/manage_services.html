@@ -1,53 +1,38 @@
-{% extends 'slot/base.html' %} {% block title %}Manage Services | Slot
-{% endblock %} {% block content %}
-<h2>{% if editing_service %}Edit Service{% else %}Add Service{% endif %}</h2>
-<form method="post">
-  {% csrf_token %} {% for field in form %}
-  <p>
-    <label for="{{ field.id_for_label }}">{{ field.label }}</label><br />
-    {{ field }}<br />
-    {{ field.errors }}
-  </p>
-  {% endfor %}
-  <button type="submit">Save</button>
-</form>
+{% extends 'slot/base.html' %}
+{% block title %}Manage Services | Slot{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  {% include 'slot/_admin_sidebar.html' with active='services' %}
+  <div class="admin-main">
+    <h1 class="mb-24">{% if editing_service %}Edit Service{% else %}Add Service{% endif %}</h1>
+    <form method="post" class="card-form wide mb-24">
+      {% csrf_token %}
+      {% for field in form %}<div class="form-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}
+      <button type="submit" class="btn btn-primary">Save</button>
+      {% if editing_service %}<a href="{% url 'manage_services' %}" class="btn btn-ghost">Cancel</a>{% endif %}
+    </form>
 
-<h3>All Services</h3>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Active</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for service in services %}
-    <tr>
-      <td>{{ service.name }}</td>
-      <td>{{ service.is_active }}</td>
-      <td>
-        <div class="table-actions">
-          <a href="{% url 'manage_services' %}?service_id={{ service.id }}"
-            >Edit</a
-          >
-          <form method="post" class="inline-form">
-            {% csrf_token %}
-            <input
-              type="hidden"
-              name="delete_service_id"
-              value="{{ service.id }}"
-            />
-            <button type="submit">Delete</button>
-          </form>
-        </div>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="3">No services found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <h2 class="mb-16">All Services</h2>
+    {% if services %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Active</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for s in services %}
+          <tr>
+            <td><strong>{{ s.name }}</strong></td>
+            <td>{% if s.is_active %}<span class="badge badge-confirmed">Yes</span>{% else %}<span class="badge badge-cancelled">No</span>{% endif %}</td>
+            <td class="table-actions">
+              <a href="{% url 'manage_services' %}?service_id={{ s.id }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="delete_service_id" value="{{ s.id }}"><button class="btn btn-danger btn-sm" onclick="return confirm('Delete?')">Delete</button></form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty-state"><p>No services yet.</p></div>{% endif %}
+    {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.previous_page_number }}">←</a>{% endif %}<span>{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.next_page_number }}">→</a>{% endif %}</div>{% endif %}
+  </div>
+</div>
 {% endblock %}

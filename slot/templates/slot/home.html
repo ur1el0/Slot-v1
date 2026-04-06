@@ -1,21 +1,44 @@
-{% extends 'slot/base.html' %} {% block title %}Home | Slot{% endblock %} 
+{% extends 'slot/base.html' %}
+{% block title %}Slot | Home{% endblock %}
 {% block content %}
-<h2>Welcome</h2>
-<p>
-  Browse services, select an available schedule, and submit your slot request.
-</p>
-<p><a href="{% url 'services' %}">View Services</a></p>
+<section class="hero">
+  <h1>The digital concierge for modern professionals.</h1>
+  <p>Precision scheduling. Seamless booking experiences designed for high-performance teams.</p>
+  <div class="hero-actions">
+    <a href="{% url 'register' %}" class="btn btn-primary">Get Started →</a>
+    <a href="{% url 'services' %}" class="btn btn-outline">Explore Services</a>
+  </div>
+</section>
 
-<h3>Available Services</h3>
+<div class="features">
+  <div class="card feature">
+    <div class="feature-icon">📅</div>
+    <h3>Precision Slots</h3>
+    <p>Zero overlaps. Maximum efficiency for your daily operations.</p>
+  </div>
+  <div class="card feature">
+    <div class="feature-icon">🔔</div>
+    <h3>Smart Reminders</h3>
+    <p>Automated nudges to reduce no-shows by up to 40%.</p>
+  </div>
+  <div class="card feature">
+    <div class="feature-icon">📊</div>
+    <h3>Real-time Analytics</h3>
+    <p>Deep insights into booking trends and client behavior.</p>
+  </div>
+</div>
+
 {% if services %}
-<ul>
-  {% for service in services %}
-  <li>
-    <strong>{{ service.name }}</strong><br />
-    {{ service.description|default:'No description provided.' }}
-  </li>
+<h2 class="mb-16">Featured Services</h2>
+<div class="service-grid mb-24">
+  {% for s in services|slice:":6" %}
+  <div class="card service-card">
+    <h3>{{ s.name }}</h3>
+    <p>{{ s.description|default:"Premium service tailored to your needs." }}</p>
+    {% if s.duration %}<div class="meta">⏱ {{ s.duration }} min</div>{% endif %}
+  </div>
   {% endfor %}
-</ul>
-{% else %}
-<p>No services are available yet.</p>
-{% endif %} {% endblock %}
+</div>
+{% endif %}
+
+{% endblock %}

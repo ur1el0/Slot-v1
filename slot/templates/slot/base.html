@@ -1,44 +1,44 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Slot{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'slot/site.css' %}" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="container">
-        <h1 class="brand">Slot</h1>
-        <nav class="site-nav">
-          <a href="{% url 'home' %}">Home</a>
-          <a href="{% url 'services' %}">Services</a>
-          {% if user.is_authenticated %}
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Slot{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'slot/site.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="{% url 'home' %}" class="brand" style="text-decoration:none">Slot</a>
+      <nav class="site-nav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'services' %}">Services</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'my_appointments' %}">Appointments</a>
           <a href="{% url 'dashboard' %}">Dashboard</a>
-          <a href="{% url 'my_appointments' %}">My Slots</a>
-          {% if user.is_staff %}
-          <a href="{% url 'admin_dashboard' %}">Admin</a>
-          {% endif %}
+          <span class="greeting">Hi, {{ user.first_name|default:user.username }}</span>
           <a href="{% url 'logout' %}">Logout</a>
-          {% else %}
+        {% else %}
           <a href="{% url 'login' %}">Login</a>
-          <a href="{% url 'register' %}">Register</a>
-          {% endif %}
-        </nav>
-      </div>
-    </header>
+          <a href="{% url 'register' %}" class="btn-signup">Sign Up</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
 
-    {% if messages %}
-    <section class="container alerts">
-      {% for message in messages %}
-      <p class="alert">{{ message }}</p>
-      {% endfor %}
-    </section>
-    {% endif %}
+  {% if messages %}
+  <div class="container alerts">
+    {% for m in messages %}<p class="alert {% if m.tags %}{{ m.tags }}{% endif %}">{{ m }}</p>{% endfor %}
+  </div>
+  {% endif %}
 
-    <main class="container main-content">
-      {% block content %}{% endblock %}
-    </main>
-  </body>
+  <main class="container main-content">{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>© 2024 Slot</span>
+      <div><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Support</a></div>
+    </div>
+  </footer>
+</body>
 </html>

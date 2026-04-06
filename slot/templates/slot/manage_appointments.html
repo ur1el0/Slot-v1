@@ -1,51 +1,55 @@
-{% extends 'slot/base.html' %} {% block title %}Manage Slots | Slot{% endblock %} {% block content %}
-<h2>Manage Slots</h2>
+{% extends 'slot/base.html' %}
+{% block title %}Manage Appointments | Slot{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  {% include 'slot/_admin_sidebar.html' with active='appointments' %}
+  <div class="admin-main">
+    <h1 class="mb-24">Manage Appointments</h1>
 
-<table>
-  <thead>
-    <tr>
-      <th>User</th>
-      <th>Service</th>
-      <th>Schedule</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for appointment in appointments %}
-    <tr>
-      <td>{{ appointment.user.username }}</td>
-      <td>{{ appointment.service.name }}</td>
-      <td>
-        {{ appointment.schedule.date }} {{ appointment.schedule.start_time }} -
-        {{ appointment.schedule.end_time }}
-      </td>
-      <td>{{ appointment.get_status_display }}</td>
-      <td>
-        <form method="post" class="inline-form table-actions">
-          {% csrf_token %}
-          <input
-            type="hidden"
-            name="appointment_id"
-            value="{{ appointment.id }}"
-          />
-          <button name="new_status" value="confirmed" type="submit">
-            Approve
-          </button>
-          <button name="new_status" value="rejected" type="submit">
-            Reject
-          </button>
-          <button name="new_status" value="completed" type="submit">
-            Complete
-          </button>
-        </form>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="5">No slots found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <!-- Create Appointment Form -->
+    <div class="card mb-24">
+      <h3>➕ Create Appointment</h3>
+      <p class="text-sm text-muted mb-16">Book a slot on behalf of a user.</p>
+      <form method="post" class="card-form wide" style="max-width:100%; border:none; box-shadow:none; padding:12px 0 0">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group"><label for="{{ create_form.user.id_for_label }}">User</label>{{ create_form.user }}{{ create_form.user.errors }}</div>
+          <div class="form-group"><label for="{{ create_form.service.id_for_label }}">Service</label>{{ create_form.service }}{{ create_form.service.errors }}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="{{ create_form.schedule.id_for_label }}">Schedule</label>{{ create_form.schedule }}{{ create_form.schedule.errors }}</div>
+          <div class="form-group"><label for="{{ create_form.reason.id_for_label }}">Reason</label>{{ create_form.reason }}{{ create_form.reason.errors }}</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Appointment</button>
+      </form>
+    </div>
+
+    <h2 class="mb-16">All Appointments</h2>
+    {% if appointments %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>User</th><th>Service</th><th>Schedule</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            <td><strong>{{ a.user.get_full_name|default:a.user.username }}</strong><br><small class="text-muted">{{ a.user.email }}</small></td>
+            <td>{{ a.service.name }}</td>
+            <td>{{ a.schedule.date }} {{ a.schedule.start_time|time:"g:i A" }}–{{ a.schedule.end_time|time:"g:i A" }}</td>
+            <td><span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></td>
+            <td>
+              <form method="post" class="inline-form table-actions">{% csrf_token %}<input type="hidden" name="appointment_id" value="{{ a.id }}">
+                {% if a.status == 'pending' %}<button name="new_status" value="confirmed" class="btn btn-primary btn-sm">Approve</button><button name="new_status" value="rejected" class="btn btn-danger btn-sm">Reject</button>
+                {% elif a.status == 'confirmed' %}<button name="new_status" value="completed" class="btn btn-sm btn-ghost">Complete</button><button name="new_status" value="cancelled" class="btn btn-danger btn-sm">Cancel</button>
+                {% else %}—{% endif %}
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty-state"><p>No appointments.</p></div>{% endif %}
+    {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.previous_page_number }}">←</a>{% endif %}<span>{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.next_page_number }}">→</a>{% endif %}</div>{% endif %}
+  </div>
+</div>
 {% endblock %}

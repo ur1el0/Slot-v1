@@ -1,45 +1,39 @@
-{% extends 'slot/base.html' %} {% block title %}Services | Slot{% endblock %} 
+{% extends 'slot/base.html' %}
+{% block title %}Services | Slot{% endblock %}
 {% block content %}
-<h2>Services</h2>
+<h1 class="mb-8">Services</h1>
+<p class="mb-24">Browse available services and book an appointment.</p>
 
-{% for service in services %}
-<section>
-  <h3>{{ service.name }}</h3>
-  <p>{{ service.description|default:'No description provided.' }}</p>
+{% if services %}
+<div class="service-grid">
+  {% for service in services %}
+  <div class="card service-card">
+    <h3>{{ service.name }}</h3>
+    <p>{{ service.description|default:"A premium service tailored to your needs." }}</p>
+    {% if service.duration %}<div class="meta">⏱ {{ service.duration }} min</div>{% endif %}
+    {% for sched in service.schedules.all %}{% if sched.bookable %}
+    <div class="schedule-item">
+      <span>{{ sched.date }} · {{ sched.start_time|time:"g:i A" }}–{{ sched.end_time|time:"g:i A" }}</span>
+      <span class="slots">{{ sched.remaining_slots }} left</span>
+    </div>
+    {% endif %}{% endfor %}
+    {% if user.is_authenticated %}
+      <a href="{% url 'book_appointment' %}?schedule={{ service.schedules.first.id|default:'' }}" class="btn btn-primary btn-sm mt-16" style="text-align:center">Book Now</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="btn btn-outline btn-sm mt-16" style="text-align:center">Login to Book</a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><p>No services available yet.</p></div>
+{% endif %}
 
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Capacity</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for schedule in service.schedules.all %} {% if schedule.bookable %}
-      <tr>
-        <td>{{ schedule.date }}</td>
-        <td>{{ schedule.start_time }} - {{ schedule.end_time }}</td>
-        <td>{{ schedule.remaining_slots }} / {{ schedule.slot_limit }}</td>
-        <td>
-          {% if user.is_authenticated %}
-          <a href="{% url 'book_appointment' %}?schedule={{ schedule.id }}"
-            >Book Slot</a
-          >
-          {% else %}
-          <a href="{% url 'login' %}">Login to book slot</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endif %} {% empty %}
-      <tr>
-        <td colspan="4">No schedules available.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</section>
-{% empty %}
-<p>No services are available yet.</p>
-{% endfor %} {% endblock %}
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination">
+  {% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.previous_page_number }}">← Prev</a>{% endif %}
+  <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

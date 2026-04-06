@@ -1,9 +1,32 @@
-{% extends 'slot/base.html' %} {% block title %}Dashboard | Slot{% endblock %}
+{% extends 'slot/base.html' %}
+{% block title %}Dashboard | Slot{% endblock %}
 {% block content %}
-<h2>Dashboard</h2>
-<p>Welcome, {{ user.get_full_name|default:user.username }}.</p>
-<ul>
-  <li><a href="{% url 'services' %}">View Services</a></li>
-  <li><a href="{% url 'my_appointments' %}">My Slots</a></li>
-</ul>
+<div class="dash-header">
+  <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+  <p>{% if pending_count %}You have {{ pending_count }} pending appointment{{ pending_count|pluralize }}.{% else %}Your schedule is clear.{% endif %}</p>
+</div>
+
+<div class="card-grid cols-3 mb-24">
+  <div class="card stat-card primary"><div class="stat-num">{{ total_count }}</div><div class="stat-label">Total</div></div>
+  <div class="card stat-card tertiary"><div class="stat-num">{{ pending_count }}</div><div class="stat-label">Pending</div></div>
+  <div class="card stat-card secondary"><div class="stat-num">{{ confirmed_count }}</div><div class="stat-label">Confirmed</div></div>
+</div>
+
+<h2 class="mb-16">Upcoming</h2>
+{% if upcoming_appointments %}
+<div class="timeline">
+  {% for a in upcoming_appointments %}
+  <div class="timeline-item">
+    <div class="timeline-time">{{ a.schedule.start_time|time:"g:i A" }}</div>
+    <div class="timeline-info">
+      <strong>{{ a.service.name }}</strong>
+      <small>{{ a.schedule.date }} · <span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></small>
+    </div>
+    <a href="{% url 'my_appointments' %}" class="btn btn-ghost btn-sm">Details</a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><p>No upcoming appointments.</p><a href="{% url 'services' %}">Browse services →</a></div>
+{% endif %}
 {% endblock %}

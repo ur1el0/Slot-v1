@@ -1,0 +1,14 @@
+<div class="admin-sidebar">
+  <div class="sidebar-title">Admin Portal</div>
+  <nav>
+    <a href="{% url 'admin_dashboard' %}" {% if active=='overview' %}class="active" {% endif %}>📊 Overview</a>
+    <a href="{% url 'manage_services' %}" {% if active=='services' %}class="active" {% endif %}>📦 Services</a>
+    <a href="{% url 'manage_schedules' %}" {% if active=='schedules' %}class="active" {% endif %}>📅 Schedules</a>
+    <a href="{% url 'manage_appointments' %}" {% if active=='appointments' %}class="active" {% endif %}>📋
+      Appointments</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="{% url 'home' %}">← Back to Site</a>
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+</div>

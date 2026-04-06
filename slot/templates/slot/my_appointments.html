@@ -1,37 +1,37 @@
-{% extends 'slot/base.html' %} {% block title %}My Slots | Slot{% endblock %} 
+{% extends 'slot/base.html' %}
+{% block title %}My Appointments | Slot{% endblock %}
 {% block content %}
-<h2>My Slots</h2>
+<div class="flex-between mb-24">
+  <div><h1>My Appointments</h1><p>Manage your bookings.</p></div>
+  <a href="{% url 'services' %}" class="btn btn-primary">+ Book New</a>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Service</th>
-      <th>Schedule</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for appointment in appointments %}
-    <tr>
-      <td>{{ appointment.service.name }}</td>
-      <td>
-        {{ appointment.schedule.date }} {{ appointment.schedule.start_time }} -
-        {{ appointment.schedule.end_time }}
-      </td>
-      <td>{{ appointment.get_status_display }}</td>
-      <td>
-        {% if appointment.status != 'cancelled' and appointment.status !=
-        'completed' and appointment.status != 'rejected' %}
-        <a href="{% url 'cancel_appointment' appointment.id %}">Cancel Slot</a>
-        {% endif %}
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="4">You have no slots yet.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% if appointments %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Service</th><th>Date</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for a in appointments %}
+      <tr{% if a.status == 'cancelled' or a.status == 'rejected' %} class="strikethrough"{% endif %}>
+        <td><strong>{{ a.service.name }}</strong></td>
+        <td>{{ a.schedule.date }}</td>
+        <td>{{ a.schedule.start_time|time:"g:i A" }} – {{ a.schedule.end_time|time:"g:i A" }}</td>
+        <td><span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></td>
+        <td>{% if a.status != 'cancelled' and a.status != 'completed' and a.status != 'rejected' %}<a href="{% url 'cancel_appointment' a.id %}" class="text-danger text-sm" onclick="return confirm('Cancel?')">Cancel</a>{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state card"><p>No appointments yet.</p><a href="{% url 'services' %}" class="btn btn-primary">Browse Services</a></div>
+{% endif %}
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination">
+  {% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.previous_page_number }}">← Prev</a>{% endif %}
+  <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+</div>
+{% endif %}
 {% endblock %}

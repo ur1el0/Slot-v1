@@ -1,57 +1,40 @@
-{% extends 'slot/base.html' %} {% block title %}Manage Schedules | Slot
-{% endblock %} {% block content %}
-<h2>{% if editing_schedule %}Edit Schedule{% else %}Add Schedule{% endif %}</h2>
-<form method="post">
-  {% csrf_token %} {% for field in form %}
-  <p>
-    <label for="{{ field.id_for_label }}">{{ field.label }}</label><br />
-    {{ field }}<br />
-    {{ field.errors }}
-  </p>
-  {% endfor %}
-  <button type="submit">Save</button>
-</form>
+{% extends 'slot/base.html' %}
+{% block title %}Manage Schedules | Slot{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  {% include 'slot/_admin_sidebar.html' with active='schedules' %}
+  <div class="admin-main">
+    <h1 class="mb-24">{% if editing_schedule %}Edit Schedule{% else %}Add Schedule{% endif %}</h1>
+    <form method="post" class="card-form wide mb-24">
+      {% csrf_token %}
+      {% for field in form %}<div class="form-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}
+      <button type="submit" class="btn btn-primary">Save</button>
+      {% if editing_schedule %}<a href="{% url 'manage_schedules' %}" class="btn btn-ghost">Cancel</a>{% endif %}
+    </form>
 
-<h3>All Schedules</h3>
-<table>
-  <thead>
-    <tr>
-      <th>Service</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Slots</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for schedule in schedules %}
-    <tr>
-      <td>{{ schedule.service.name }}</td>
-      <td>{{ schedule.date }}</td>
-      <td>{{ schedule.start_time }} - {{ schedule.end_time }}</td>
-      <td>{{ schedule.remaining_slots }} / {{ schedule.slot_limit }}</td>
-      <td>
-        <div class="table-actions">
-          <a href="{% url 'manage_schedules' %}?schedule_id={{ schedule.id }}"
-            >Edit</a
-          >
-          <form method="post" class="inline-form">
-            {% csrf_token %}
-            <input
-              type="hidden"
-              name="delete_schedule_id"
-              value="{{ schedule.id }}"
-            />
-            <button type="submit">Delete</button>
-          </form>
-        </div>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="5">No schedules found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <h2 class="mb-16">All Schedules</h2>
+    {% if schedules %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Service</th><th>Date</th><th>Time</th><th>Slots</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for s in schedules %}
+          <tr>
+            <td><strong>{{ s.service.name }}</strong></td>
+            <td>{{ s.date }}</td>
+            <td>{{ s.start_time|time:"g:i A" }} – {{ s.end_time|time:"g:i A" }}</td>
+            <td>{{ s.remaining_slots }} / {{ s.slot_limit }}</td>
+            <td class="table-actions">
+              <a href="{% url 'manage_schedules' %}?schedule_id={{ s.id }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="post" class="inline-form">{% csrf_token %}<input type="hidden" name="delete_schedule_id" value="{{ s.id }}"><button class="btn btn-danger btn-sm" onclick="return confirm('Delete?')">Delete</button></form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<div class="empty-state"><p>No schedules yet.</p></div>{% endif %}
+    {% if page_obj.paginator.num_pages > 1 %}<div class="pagination">{% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.previous_page_number }}">←</a>{% endif %}<span>{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?page={{ page_obj.next_page_number }}">→</a>{% endif %}</div>{% endif %}
+  </div>
+</div>
 {% endblock %}
