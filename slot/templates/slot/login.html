@@ -4,12 +4,7 @@
 <div class="auth-page">
   <div class="auth-card">
     <h1>Sign In</h1>
-    <p class="subtitle">Login as a user or admin.</p>
-
-    <div class="role-tabs mb-16">
-      <button class="role-tab active" onclick="setRole('user', this)">👤 User</button>
-      <button class="role-tab" onclick="setRole('admin', this)">🛡️ Admin</button>
-    </div>
+    <p class="subtitle">Sign in to book services or manage the portal.</p>
 
     <form method="post" class="card-form" style="max-width:100%">
       {% csrf_token %}
@@ -24,27 +19,9 @@
         <input name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" type="password" placeholder="••••••••">
         {{ form.password.errors }}
       </div>
-      <p id="role-hint" class="text-sm text-muted mb-16">Logging in as <strong>User</strong></p>
-      <button type="submit" class="btn btn-primary" style="width:100%">Login →</button>
+      <button type="submit" class="btn btn-primary full-width">Login →</button>
     </form>
     <div class="auth-footer">Don't have an account? <a href="{% url 'register' %}">Create one</a></div>
   </div>
 </div>
-
-<style>
-.role-tabs { display: flex; gap: 8px; }
-.role-tab {
-  flex: 1; padding: 10px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
-  background: var(--bg); font-weight: 600; font-size: .9rem; cursor: pointer; transition: all .15s;
-  font-family: inherit;
-}
-.role-tab.active { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
-</style>
-<script>
-function setRole(role, el) {
-  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('role-hint').innerHTML = 'Logging in as <strong>' + (role === 'admin' ? 'Admin' : 'User') + '</strong>';
-}
-</script>
 {% endblock %}

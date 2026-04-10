@@ -1,32 +1,83 @@
 {% extends 'slot/base.html' %}
 {% block title %}Dashboard | Slot{% endblock %}
 {% block content %}
-<div class="dash-header">
-  <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
-  <p>{% if pending_count %}You have {{ pending_count }} pending appointment{{ pending_count|pluralize }}.{% else %}Your schedule is clear.{% endif %}</p>
-</div>
-
-<div class="card-grid cols-3 mb-24">
-  <div class="card stat-card primary"><div class="stat-num">{{ total_count }}</div><div class="stat-label">Total</div></div>
-  <div class="card stat-card tertiary"><div class="stat-num">{{ pending_count }}</div><div class="stat-label">Pending</div></div>
-  <div class="card stat-card secondary"><div class="stat-num">{{ confirmed_count }}</div><div class="stat-label">Confirmed</div></div>
-</div>
-
-<h2 class="mb-16">Upcoming</h2>
-{% if upcoming_appointments %}
-<div class="timeline">
-  {% for a in upcoming_appointments %}
-  <div class="timeline-item">
-    <div class="timeline-time">{{ a.schedule.start_time|time:"g:i A" }}</div>
-    <div class="timeline-info">
-      <strong>{{ a.service.name }}</strong>
-      <small>{{ a.schedule.date }} · <span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></small>
+<div class="dashboard-hero user-hero card mb-24">
+  <div class="dashboard-tag">User Portal</div>
+  <div class="dashboard-hero-grid">
+    <div>
+      <h1 class="mb-8">Choose a service and book the right time.</h1>
+      <p class="mb-16">Browse active services, pick a schedule, and keep your upcoming appointments in view.</p>
+      <div class="dashboard-actions">
+        <a href="{% url 'services' %}" class="btn btn-primary">Browse Services</a>
+        <a href="{% url 'book_appointment' %}" class="btn btn-outline">Book Appointment</a>
+        <a href="{% url 'my_appointments' %}" class="btn btn-ghost">My Appointments</a>
+      </div>
     </div>
-    <a href="{% url 'my_appointments' %}" class="btn btn-ghost btn-sm">Details</a>
+    <div class="dashboard-summary card">
+      <h3 class="mb-8">Your booking status</h3>
+      <p class="text-sm text-muted mb-0">{% if next_appointment %}Next appointment is on {{ next_appointment.schedule.date }} at {{ next_appointment.schedule.start_time|time:"g:i A" }}.{% else %}You do not have any upcoming bookings yet.{% endif %}</p>
+      <div class="summary-list mt-16">
+        <div><strong>{{ active_service_count }}</strong><span>Services to choose from</span></div>
+        <div><strong>{{ total_count }}</strong><span>Total appointments</span></div>
+        <div><strong>{{ pending_count }}</strong><span>Pending</span></div>
+        <div><strong>{{ confirmed_count }}</strong><span>Confirmed</span></div>
+      </div>
+    </div>
   </div>
-  {% endfor %}
 </div>
-{% else %}
-<div class="empty-state"><p>No upcoming appointments.</p><a href="{% url 'services' %}">Browse services →</a></div>
-{% endif %}
+
+<div class="user-metrics-grid mb-24">
+  <div class="card stat-card primary"><div class="stat-num">{{ active_service_count }}</div><div class="stat-label">Services</div></div>
+  <div class="card stat-card tertiary"><div class="stat-num">{{ total_count }}</div><div class="stat-label">Total</div></div>
+  <div class="card stat-card secondary"><div class="stat-num">{{ pending_count }}</div><div class="stat-label">Pending</div></div>
+  <div class="card stat-card"><div class="stat-num">{{ confirmed_count }}</div><div class="stat-label">Confirmed</div></div>
+</div>
+
+<div class="user-section-grid mb-24">
+  <div class="card">
+    <div class="flex-between mb-16">
+      <div>
+        <h2 class="mb-8">Featured services</h2>
+        <p class="text-sm text-muted mb-0">Pick from active services and move straight into booking.</p>
+      </div>
+    </div>
+    <div class="dashboard-stack">
+      {% for service in featured_services %}
+      <div class="activity-item">
+        <div>
+          <strong>{{ service.name }}</strong>
+          <p>{{ service.description|default:"A premium service tailored to your needs." }}</p>
+        </div>
+        <a href="{% url 'services' %}" class="btn btn-sm btn-outline">View</a>
+      </div>
+      {% empty %}
+      <div class="empty-state"><p>No services are available right now.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="flex-between mb-16">
+      <div>
+        <h2 class="mb-8">Upcoming appointments</h2>
+        <p class="text-sm text-muted mb-0">Keep an eye on what is next in your schedule.</p>
+      </div>
+    </div>
+    {% if upcoming_appointments %}
+    <div class="timeline">
+      {% for a in upcoming_appointments %}
+      <div class="timeline-item">
+        <div class="timeline-time">{{ a.schedule.start_time|time:"g:i A" }}</div>
+        <div class="timeline-info">
+          <strong>{{ a.service.name }}</strong>
+          <small>{{ a.schedule.date }} · <span class="badge badge-{{ a.status }}">{{ a.get_status_display }}</span></small>
+        </div>
+        <a href="{% url 'my_appointments' %}" class="btn btn-ghost btn-sm">Details</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><p>No upcoming appointments.</p><a href="{% url 'services' %}">Browse services →</a></div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

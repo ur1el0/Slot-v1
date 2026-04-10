@@ -1,57 +1,127 @@
-{% extends 'slot/base.html' %}
-{% block title %}Register | Slot{% endblock %}
-{% block content %}
+{% extends 'slot/base.html' %} {% block title %}Register | Slot{% endblock %} 
+{%block content %}
 <div class="auth-page">
   <div class="auth-card">
     <h1>Create Account</h1>
     <p class="subtitle">Join the Slot platform.</p>
 
-    <form method="post" class="card-form wide" style="max-width:100%">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
+    <form method="post" class="card-form wide" style="max-width: 100%">
+      {% csrf_token %} {{ form.non_field_errors }}
 
       <!-- Role Selection -->
       <div class="form-group">
         <label>I am registering as:</label>
         <div class="role-selector">
           {% for radio in form.role %}
-            <label class="role-option">
-              {{ radio.tag }}
-              <span class="role-label">
-                {% if radio.choice_value == "user" %}👤 User{% else %}🛡️ Admin{% endif %}
-              </span>
-            </label>
+          <label class="role-option">
+            {{ radio.tag }}
+            <span class="role-label"> {{ radio.choice_label }} </span>
+          </label>
           {% endfor %}
         </div>
         {{ form.role.errors }}
       </div>
 
       <div class="form-row">
-        <div class="form-group"><label for="id_first_name">First Name</label><input name="first_name" id="id_first_name" type="text" placeholder="Jane">{{ form.first_name.errors }}</div>
-        <div class="form-group"><label for="id_last_name">Last Name</label><input name="last_name" id="id_last_name" type="text" placeholder="Doe">{{ form.last_name.errors }}</div>
+        <div class="form-group">
+          <label for="id_first_name">First Name</label
+          ><input
+            name="first_name"
+            id="id_first_name"
+            type="text"
+            placeholder="Jane"
+          />{{ form.first_name.errors }}
+        </div>
+        <div class="form-group">
+          <label for="id_last_name">Last Name</label
+          ><input
+            name="last_name"
+            id="id_last_name"
+            type="text"
+            placeholder="Doe"
+          />{{ form.last_name.errors }}
+        </div>
       </div>
-      <div class="form-group"><label for="id_username">Username</label><input name="username" id="id_username" type="text" placeholder="janedoe">{{ form.username.errors }}</div>
-      <div class="form-group"><label for="id_email">Email</label><input name="email" id="id_email" type="email" placeholder="jane@example.com">{{ form.email.errors }}</div>
+      <div class="form-group">
+        <label for="id_username">Username</label
+        ><input
+          name="username"
+          id="id_username"
+          type="text"
+          placeholder="janedoe"
+        />{{ form.username.errors }}
+      </div>
+      <div class="form-group">
+        <label for="id_email">Email</label
+        ><input
+          name="email"
+          id="id_email"
+          type="email"
+          placeholder="jane@example.com"
+        />{{ form.email.errors }}
+      </div>
       <div class="form-row">
-        <div class="form-group"><label for="id_password1">Password</label><input name="password1" id="id_password1" type="password" placeholder="••••••••">{{ form.password1.errors }}</div>
-        <div class="form-group"><label for="id_password2">Confirm</label><input name="password2" id="id_password2" type="password" placeholder="••••••••">{{ form.password2.errors }}</div>
+        <div class="form-group">
+          <label for="id_password1">Password</label
+          ><input
+            name="password1"
+            id="id_password1"
+            type="password"
+            placeholder="••••••••"
+          />{{ form.password1.errors }}
+        </div>
+        <div class="form-group">
+          <label for="id_password2">Confirm</label
+          ><input
+            name="password2"
+            id="id_password2"
+            type="password"
+            placeholder="••••••••"
+          />{{ form.password2.errors }}
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%">Register</button>
+      <button type="submit" class="btn btn-primary" style="width: 100%">
+        Register
+      </button>
     </form>
-    <div class="auth-footer">Already have an account? <a href="{% url 'login' %}">Login</a></div>
+    <div class="auth-footer">
+      Already have an account? <a href="{% url 'login' %}">Login</a>
+    </div>
   </div>
 </div>
 
 <style>
-.role-selector { display: flex; gap: 12px; margin-top: 8px; }
-.role-option {
-  flex: 1; position: relative; cursor: pointer;
-  border: 1.5px solid var(--line); border-radius: var(--radius-sm);
-  padding: 10px; transition: all 0.2s; background: var(--bg);
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.role-option input[type="radio"] { width: auto; margin: 0; }
-.role-option:has(input:checked) { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); }
-.role-label { font-weight: 600; font-size: 0.9rem; }
+  .role-selector {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .role-option {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    transition: all 0.2s;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .role-option input[type="radio"] {
+    width: auto;
+    margin: 0;
+  }
+  .role-option:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--primary-bg);
+    color: var(--primary);
+  }
+  .role-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
 </style>
 {% endblock %}

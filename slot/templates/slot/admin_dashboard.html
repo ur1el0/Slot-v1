@@ -4,19 +4,118 @@
 <div class="admin-layout">
   {% include 'slot/_admin_sidebar.html' with active='overview' %}
   <div class="admin-main">
-    <h1 class="mb-8">Admin Dashboard</h1>
-    <div class="card-grid cols-3 mb-24" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+    <div class="dashboard-hero admin-hero card mb-24">
+      <div class="dashboard-tag">Admin Portal</div>
+      <div class="dashboard-hero-grid">
+        <div>
+          <h1 class="mb-8">Manage services, appointments, and capacity.</h1>
+          <p class="mb-16">Track demand, approve bookings, and keep every service line moving from one place.</p>
+          <div class="dashboard-actions">
+            <a href="{% url 'manage_services' %}" class="btn btn-primary">Manage Services</a>
+            <a href="{% url 'manage_appointments' %}" class="btn btn-outline">Review Appointments</a>
+            <a href="{% url 'manage_schedules' %}" class="btn btn-ghost">Update Schedules</a>
+          </div>
+        </div>
+        <div class="dashboard-summary card">
+          <h3 class="mb-8">Operational snapshot</h3>
+          <p class="text-sm text-muted mb-0">{{ pending_count }} pending approvals and {{ available_schedule_count }} available schedules.</p>
+          <div class="summary-list mt-16">
+            <div><strong>{{ service_count }}</strong><span>Total services</span></div>
+            <div><strong>{{ active_service_count }}</strong><span>Active services</span></div>
+            <div><strong>{{ schedule_count }}</strong><span>Schedules</span></div>
+            <div><strong>{{ appointment_count }}</strong><span>Appointments</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid cols-3 mb-24">
       <div class="card stat-card primary"><div class="stat-num">{{ service_count }}</div><div class="stat-label">Services</div></div>
       <div class="card stat-card secondary"><div class="stat-num">{{ schedule_count }}</div><div class="stat-label">Schedules</div></div>
       <div class="card stat-card tertiary"><div class="stat-num">{{ appointment_count }}</div><div class="stat-label">Appointments</div></div>
       <div class="card stat-card danger"><div class="stat-num">{{ pending_count }}</div><div class="stat-label">Pending</div></div>
       <div class="card stat-card"><div class="stat-num">{{ confirmed_count }}</div><div class="stat-label">Confirmed</div></div>
+      <div class="card stat-card"><div class="stat-num">{{ completed_count }}</div><div class="stat-label">Completed</div></div>
     </div>
-    <h2 class="mb-16">Quick Links</h2>
-    <div class="card-grid cols-3">
-      <a href="{% url 'manage_services' %}" class="card" style="text-decoration:none"><h3>📦 Services</h3><p>Add or edit services</p></a>
-      <a href="{% url 'manage_schedules' %}" class="card" style="text-decoration:none"><h3>📅 Schedules</h3><p>Manage time slots</p></a>
-      <a href="{% url 'manage_appointments' %}" class="card" style="text-decoration:none"><h3>📋 Appointments</h3><p>{{ pending_count }} pending review</p></a>
+
+    <div class="admin-section-grid mb-24">
+      <div class="card">
+        <div class="flex-between mb-16">
+          <div>
+            <h2 class="mb-8">Management shortcuts</h2>
+            <p class="text-sm text-muted mb-0">Jump straight into the areas you work in most.</p>
+          </div>
+        </div>
+        <div class="dashboard-link-grid">
+          <a href="{% url 'manage_services' %}" class="dashboard-link-card">
+            <h3>Services</h3>
+            <p>Publish, edit, or retire offerings.</p>
+          </a>
+          <a href="{% url 'manage_schedules' %}" class="dashboard-link-card">
+            <h3>Schedules</h3>
+            <p>Open or close booking windows.</p>
+          </a>
+          <a href="{% url 'manage_appointments' %}" class="dashboard-link-card">
+            <h3>Appointments</h3>
+            <p>Review pending work and update status.</p>
+          </a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="flex-between mb-16">
+          <div>
+            <h2 class="mb-8">Recent activity</h2>
+            <p class="text-sm text-muted mb-0">A quick scan of the latest bookings and availability.</p>
+          </div>
+        </div>
+        <div class="dashboard-stack">
+          {% for appointment in recent_appointments %}
+          <div class="activity-item">
+            <div>
+              <strong>{{ appointment.user.get_full_name|default:appointment.user.username }}</strong>
+              <p>{{ appointment.service.name }} · {{ appointment.schedule.date }} at {{ appointment.schedule.start_time|time:"g:i A" }}</p>
+            </div>
+            <span class="badge badge-{{ appointment.status }}">{{ appointment.get_status_display }}</span>
+          </div>
+          {% empty %}
+          <div class="empty-state"><p>No recent appointments to review.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card">
+        <div class="flex-between mb-16">
+          <div>
+            <h2 class="mb-8">Available schedules</h2>
+            <p class="text-sm text-muted mb-0">Open booking windows that still have capacity.</p>
+          </div>
+        </div>
+        <div class="dashboard-stack">
+          {% for schedule in upcoming_schedules %}
+          <div class="activity-item">
+            <div>
+              <strong>{{ schedule.service.name }}</strong>
+              <p>{{ schedule.date }} · {{ schedule.start_time|time:"g:i A" }}–{{ schedule.end_time|time:"g:i A" }}</p>
+            </div>
+            <span class="badge badge-confirmed">{{ schedule.remaining_slots }} left</span>
+          </div>
+          {% empty %}
+          <div class="empty-state"><p>No available schedules right now.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="mb-8">Live counts</h2>
+        <p class="text-sm text-muted mb-16">Focused on the numbers you need when operating the portal.</p>
+        <div class="summary-list compact spacious">
+          <div><strong>{{ active_service_count }}</strong><span>Active services</span></div>
+          <div><strong>{{ inactive_service_count }}</strong><span>Inactive services</span></div>
+          <div><strong>{{ available_schedule_count }}</strong><span>Open schedules</span></div>
+          <div><strong>{{ pending_count }}</strong><span>Pending appointments</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
